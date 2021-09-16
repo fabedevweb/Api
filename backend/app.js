@@ -74,6 +74,7 @@ app.get("/api/sauces", (req, res, next) => {
 
 //Enregistrement de la route attendu par le frontend au moment de l'authentification
 //Middleware //
+
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use("/api/auth", userRoutes);
