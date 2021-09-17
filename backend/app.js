@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 //J'importe mogoose, package qui facilite les interactions avec ma base de données MongoDB grâce à des fonctions extrêmement utiles.
 const mongoose = require("mongoose");
 const path = require("path");
-const saucesRoutes = require("./routes/sauces");
+const saucesRoutes = require("./routes/sauce");
 //J'importe le router connection utilisateur
 const userRoutes = require("./routes/user");
 
@@ -41,36 +41,6 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-
-/*Capture et enregistre l'image, analyse la sauce transformée en chaîne de caractères et l'enregistre
-dans la base de données en définissant correctement son imageUrl. Initialise les likes et dislikes de la sauce à
-0 et les usersLiked et usersDisliked avec des tableaux vides. Remarquez que le corps de la demande initiale est vide ; lorsque
-multer est ajouté, il renvoie une chaîne pour le corps de la demande en fonction des données soumises avec le fichier. 
-app.post("/api/sauces", (req, res, next) => {
-  delete req.body._id;
-  const sauce = new Sauces({
-    ...req.body,
-  });
-  sauce
-    .save()
-    .then(() => res.status(201).json({ message: "Objet enregistré !" }))
-    .catch((error) => res.status(400).json({ error }));
-});
-
-//Renvoie la sauce avec l’_id fourni
-app.get("/api/sauces/:id", (req, res, next) => {
-  Sauces.findOne({ _id: req.params.id })
-    .then((sauces) => res.status(200).json(sauces))
-    .catch((error) => res.status(404).json({ error }));
-});
-
-//Renvoie un tableau de toutes les sauces de la base de données
-app.get("/api/sauces", (req, res, next) => {
-  Sauces.find()
-    .then((sauces) => res.status(200).json(sauces))
-    .catch((error) => res.status(400).json({ error }));
-});
-*/
 
 //Enregistrement de la route attendu par le frontend au moment de l'authentification
 //Middleware //
