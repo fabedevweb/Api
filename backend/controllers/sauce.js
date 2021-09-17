@@ -1,3 +1,4 @@
+const sauce = require("../models/sauce");
 const Sauce = require("../models/sauce");
 
 exports.createSauce = (req, res, next) => {
@@ -28,25 +29,9 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  const sauce = new Sauce({
-    _id: req.params.id,
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId,
-  });
-  Sauce.updateOne({ _id: req.params.id }, sauce)
-    .then(() => {
-      res.status(201).json({
-        message: "Thing updated successfully!",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+  Sauce.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+    .then(() => res.status(200).json({ message: "Objet modifié !" }))
+    .catch((error) => res.status(400).json({ error }));
 };
 
 exports.deleteSauce = (req, res, next) => {
@@ -61,4 +46,38 @@ exports.deleteSauce = (req, res, next) => {
         error: error,
       });
     });
+};
+//Si l'utilisateur aime la sauce ==> Like = 1 l'utilisateur aime la sauce
+/*
+  condition switch avec des cases 1, 0, -1 vu sur le mdn
+  avec $inc pour incrémenter ou decrementer
+  $push pour ajouter l'userId
+  $pull pour le retirer
+  */
+exports.like = (req, res, next) => {
+  switch (req.body.like) {
+    case 0:
+      Sauce.findOne({ _id: req.params.id })
+        .then((sauce) =>
+          res.status(200).json({ message: "L'utilisateur aime la sauce !" })
+        )
+        .catch((error) => res.status(400).json({ error }));
+      break;
+  }
+  //Si l'utilisateur n'aime pas la sauce ==> Dislikes = -1 l'utilisateur aime la sauce
+  if (req.body.like == -1) {
+    sauce
+      .then(() =>
+        res.status(200).json({ message: "L'utilisateur n'aime pas la sauce !" })
+      )
+      .catch((error) => res.status(400).json({ error }));
+  }
+  //Si l'utilisateur annule son like ou son dislike ==> Like = 0
+  if (req.body.like == -1) {
+    sauce
+      .then(() =>
+        res.status(200).json({ message: "L'utilisateur n'aime pas la sauce !" })
+      )
+      .catch((error) => res.status(400).json({ error }));
+  }
 };
