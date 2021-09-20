@@ -1,4 +1,3 @@
-const sauce = require("../models/sauce");
 const Sauce = require("../models/sauce");
 
 exports.createSauce = (req, res, next) => {
@@ -55,16 +54,23 @@ exports.deleteSauce = (req, res, next) => {
   $pull pour le retirer
   */
 exports.like = (req, res, next) => {
-  switch (req.body.like) {
-    case 0:
-      Sauce.findOne({ _id: req.params.id })
-        .then((sauce) =>
-          res.status(200).json({ message: "L'utilisateur aime la sauce !" })
+  //Si l'utilisateur aime la sauce ==> like = 1
+  Sauce.findOne({ _id: req.params.id }).then((Sauce) => {
+    switch (req.body.like) {
+      case 1:
+        Sauce.updateOne(
+          { _id: req.params.id },
+          { $push: { usersLiked: req.body.userId }, $inc: { likes: +1 } }
         )
-        .catch((error) => res.status(400).json({ error }));
-      break;
-  }
-  //Si l'utilisateur n'aime pas la sauce ==> Dislikes = -1 l'utilisateur aime la sauce
+          .then(() =>
+            res.status(200).json({ message: "L'utilisateur aime la sauce !" })
+          )
+          .catch((error) => res.status(400).json({ error }));
+    }
+  });
+
+  /*
+  //Si l'utilisateur n'aime pas la sauce ==> Dislikes = -1
   if (req.body.like == -1) {
     sauce
       .then(() =>
@@ -80,4 +86,5 @@ exports.like = (req, res, next) => {
       )
       .catch((error) => res.status(400).json({ error }));
   }
+  */
 };

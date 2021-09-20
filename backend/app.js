@@ -9,14 +9,6 @@ const saucesRoutes = require("./routes/sauce");
 //J'importe le router connection utilisateur
 const userRoutes = require("./routes/user");
 
-/*
-app.post("/api/auth", (req, res, next) => {
-  console.log(req.body);
-  res.status(201).json({
-    message: "Objet créé !",
-  });
-});
-*/
 //Je me connecte ensuite à MongoDB Atlas
 mongoose
   .connect(
