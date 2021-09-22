@@ -58,14 +58,41 @@ exports.like = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id }).then((Sauce) => {
     switch (req.body.like) {
       case 1:
-        Sauce.updateOne(
-          { _id: req.params.id },
-          { $push: { usersLiked: req.body.userId }, $inc: { likes: +1 } }
-        )
+        Sauce.updateOne({
+          _id: req.params.id,
+          $push: { usersLiked: req.body.userId },
+          $inc: { likes: 1 },
+        })
           .then(() =>
             res.status(200).json({ message: "L'utilisateur aime la sauce !" })
           )
           .catch((error) => res.status(400).json({ error }));
+        break;
+      case 0:
+        Sauce.updateOne({
+          $pull: { usersliked: req.body.userId },
+        })
+          .then(() =>
+            res
+              .status(200)
+              .json({ message: "L'utilisateur annule son like ou dislike!" })
+          )
+          .catch((error) => res.status(400).json({ error }));
+        break;
+      case -1:
+        Sauce.updateOne({
+          _id: req.params.id,
+          $push: { usersDisliked: req.body.userId },
+          $inc: { dislikes: 1 },
+        })
+          .then(() =>
+            res
+              .status(200)
+              .json({ message: "L'utilisateur n'aime pas la sauce !" })
+          )
+          .catch((error) => res.status(400).json({ error }));
+      default:
+        console.log("Unknown account type");
     }
   });
 
