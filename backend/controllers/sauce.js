@@ -55,63 +55,69 @@ exports.deleteSauce = (req, res, next) => {
   */
 exports.like = (req, res, next) => {
   //Si l'utilisateur aime la sauce ==> like = 1
-  Sauce.findOne({ _id: req.params.id }).then((Sauce) => {
-    switch (req.body.like) {
-      case 1:
-        Sauce.updateOne({
-          _id: req.params.id,
-          $push: { usersLiked: req.body.userId },
-          $inc: { likes: 1 },
-        })
-          .then(() =>
-            res.status(200).json({ message: "L'utilisateur aime la sauce !" })
-          )
-          .catch((error) => res.status(400).json({ error }));
-        break;
-      case 0:
-        Sauce.updateOne({
-          $pull: { usersliked: req.body.userId },
-        })
-          .then(() =>
-            res
-              .status(200)
-              .json({ message: "L'utilisateur annule son like ou dislike!" })
-          )
-          .catch((error) => res.status(400).json({ error }));
-        break;
-      case -1:
-        Sauce.updateOne({
-          _id: req.params.id,
-          $push: { usersDisliked: req.body.userId },
-          $inc: { dislikes: 1 },
-        })
-          .then(() =>
-            res
-              .status(200)
-              .json({ message: "L'utilisateur n'aime pas la sauce !" })
-          )
-          .catch((error) => res.status(400).json({ error }));
-      default:
-        console.log("Unknown account type");
-    }
-  });
-
-  /*
-  //Si l'utilisateur n'aime pas la sauce ==> Dislikes = -1
-  if (req.body.like == -1) {
-    sauce
-      .then(() =>
-        res.status(200).json({ message: "L'utilisateur n'aime pas la sauce !" })
-      )
-      .catch((error) => res.status(400).json({ error }));
-  }
-  //Si l'utilisateur annule son like ou son dislike ==> Like = 0
-  if (req.body.like == -1) {
-    sauce
-      .then(() =>
-        res.status(200).json({ message: "L'utilisateur n'aime pas la sauce !" })
-      )
-      .catch((error) => res.status(400).json({ error }));
-  }
-  */
+  Sauce.findOne({ _id: req.params.id })
+    .then((Sauce) => {
+      switch (req.body.like) {
+        case 1:
+          if (!Sauce.usersLiked.includes(req.body.userId)) {
+            Sauce.updateOne({
+              _id: req.params.id,
+              $push: { usersLiked: req.body.userId },
+              $inc: { likes: 1 },
+            })
+              .then(() =>
+                res
+                  .status(200)
+                  .json({ message: "L'utilisateur aime la sauce !" })
+              )
+              .catch((error) => res.status(400).json({ error }));
+          }
+          break;
+        case 0:
+          if (Sauce.usersLiked.includes(req.body.userId)) {
+            Sauce.updateOne({
+              _id: req.params.id,
+              $pull: { usersLiked: req.body.userId },
+              $inc: { likes: -1 },
+            })
+              .then(() =>
+                res
+                  .status(200)
+                  .json({ message: "L'utilisateur aime la sauce !" })
+              )
+              .catch((error) => res.status(400).json({ error }));
+          } else if (Sauce.usersDisliked.includes(req.body.userId)) {
+            Sauce.updateOne({
+              _id: req.params.id,
+              $pull: { usersDisliked: req.body.userId },
+              $inc: { dislikes: -1 },
+            })
+              .then(() =>
+                res
+                  .status(200)
+                  .json({ message: "L'utilisateur aime la sauce !" })
+              )
+              .catch((error) => res.status(400).json({ error }));
+          }
+          break;
+        case -1:
+          if (!Sauce.usersDisliked.includes(req.body.userId)) {
+            Sauce.updateOne({
+              _id: req.params.id,
+              $push: { usersDisliked: req.body.userId },
+              $inc: { dislikes: 1 },
+            })
+              .then(() =>
+                res
+                  .status(200)
+                  .json({ message: "L'utilisateur n'aime pas la sauce !" })
+              )
+              .catch((error) => res.status(400).json({ error }));
+          }
+          break;
+        default:
+          console.log("Unknown account type");
+      }
+    })
+    .catch((error) => res.status(400).json({ error }));
 };
