@@ -30,7 +30,9 @@ exports.getAllSauces = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
   Sauce.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
     .then(() => res.status(200).json({ message: "Objet modifié !" }))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) =>
+      res.status(403).json({ message: "unauthorized request" })
+    );
 };
 
 exports.deleteSauce = (req, res, next) => {
@@ -54,10 +56,10 @@ exports.deleteSauce = (req, res, next) => {
   $pull pour le retirer
   */
 exports.like = (req, res, next) => {
-  //Si l'utilisateur aime la sauce ==> like = 1
   Sauce.findOne({ _id: req.params.id })
     .then((Sauce) => {
       switch (req.body.like) {
+        //Si l'utilisateur aime la sauce ==> like = 1
         case 1:
           if (!Sauce.usersLiked.includes(req.body.userId)) {
             Sauce.updateOne({
@@ -73,6 +75,7 @@ exports.like = (req, res, next) => {
               .catch((error) => res.status(400).json({ error }));
           }
           break;
+        //Si l'utilisateur annule son avis ==> like = 0
         case 0:
           if (Sauce.usersLiked.includes(req.body.userId)) {
             Sauce.updateOne({
@@ -100,6 +103,7 @@ exports.like = (req, res, next) => {
               .catch((error) => res.status(400).json({ error }));
           }
           break;
+        //Si l'utilisateur n'aime pas la sauce ==> like = 1
         case -1:
           if (!Sauce.usersDisliked.includes(req.body.userId)) {
             Sauce.updateOne({

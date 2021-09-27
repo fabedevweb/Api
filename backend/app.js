@@ -19,6 +19,11 @@ mongoose
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
+
+//***********MIDDLEWARE***************/
+//Gère l'erreur CORS
+//Général, pas de route, sera utiliser pour toutes les req envoyées au serveur
+//"*" Tout le monde à le droit d'accéder à l'API
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -31,14 +36,12 @@ app.use((req, res, next) => {
   );
   next();
 });
-
+//bodyparser pour extraire l'objet JSON de la demande provenant de l'application frontend
 app.use(bodyParser.json());
-
-//Enregistrement de la route attendu par le frontend au moment de l'authentification
-//Middleware //
-
+//Pour importer les images des sauces
+// Path permet à l'API de savoir ou se trouve les images à récupérer
 app.use("/images", express.static(path.join(__dirname, "images")));
-
+//
 app.use("/api/auth", userRoutes);
 app.use("/api/sauces", saucesRoutes);
 

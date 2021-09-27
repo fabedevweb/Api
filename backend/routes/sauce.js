@@ -15,7 +15,7 @@ dans la base de données en définissant correctement son imageUrl. Initialise l
 multer est ajouté, il renvoie une chaîne pour le corps de la demande en fonction des données soumises avec le fichier. */
 router.post("/", auth, multer, sauceCtrl.createSauce);
 
-//Renvoie la sauce avec l’_id fourni
+//Renvoie la sauce avec l’_id de la personne qui l'a créé
 router.get("/:id", auth, sauceCtrl.getOneSauce);
 
 //Renvoie un tableau de toutes les sauces de la base de données
