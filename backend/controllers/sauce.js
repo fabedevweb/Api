@@ -5,6 +5,8 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
   const sauce = new Sauce({
     ...sauceObject,
+    dislikes: 0,
+    likes: 0,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
@@ -48,13 +50,66 @@ exports.deleteSauce = (req, res, next) => {
       });
     });
 };
-//Si l'utilisateur aime la sauce ==> Like = 1 l'utilisateur aime la sauce
+
+exports.like = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id }).then((Sauce) => {
+    if (req.body.like === 1 && !Sauce.usersLiked.includes(req.body.userId)) {
+      Sauce.updateOne({
+        $push: { usersLiked: req.body.userId },
+        $inc: { likes: 1 },
+      })
+        .then(() =>
+          res.status(200).json({ message: "L'utilisateur aime la sauce !" })
+        )
+        .catch((error) => res.status(400).json({ error }));
+    }
+    if (req.body.like === 0 && Sauce.usersLiked.includes(req.body.userId)) {
+      Sauce.updateOne({
+        $pull: { usersLiked: req.body.userId },
+        $inc: { likes: -1 },
+      })
+        .then(() =>
+          res.status(200).json({ message: "L'utilisateur annule son like !" })
+        )
+        .catch((error) => res.status(400).json({ error }));
+    }
+    if (
+      req.body.like === -1 &&
+      !Sauce.usersDisliked.includes(req.body.userId)
+    ) {
+      Sauce.updateOne({
+        $push: { usersDisliked: req.body.userId },
+        $inc: { dislikes: 1 },
+      })
+        .then(() =>
+          res
+            .status(200)
+            .json({ message: "L'utilisateur n'aime pas la sauce !" })
+        )
+        .catch((error) => res.status(400).json({ error }));
+    }
+    if (req.body.like === 0 && Sauce.usersDisliked.includes(req.body.userId)) {
+      Sauce.updateOne({
+        $pull: { usersDisliked: req.body.userId },
+        $inc: { dislikes: -1 },
+      })
+        .then(() =>
+          res
+            .status(200)
+            .json({ message: "L'utilisateur annule son dislike !" })
+        )
+        .catch((error) => res.status(400).json({ error }));
+    }
+  });
+};
 /*
+//Si l'utilisateur aime la sauce ==> Like = 1 l'utilisateur aime la sauce
+
   condition switch avec des cases 1, 0, -1 vu sur le mdn
   avec $inc pour incrémenter ou decrementer
   $push pour ajouter l'userId
   $pull pour le retirer
-  */
+ 
 exports.like = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((Sauce) => {
@@ -125,3 +180,4 @@ exports.like = (req, res, next) => {
     })
     .catch((error) => res.status(400).json({ error }));
 };
+*/
