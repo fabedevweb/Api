@@ -36,7 +36,7 @@ app.use((req, res, next) => {
   );
   next();
 });
-//bodyparser pour extraire l'objet JSON de la demande provenant de l'application frontend
+//bodyparser pour transformer le corp de la requête provenant du frontend en objet JSON
 app.use(bodyParser.json());
 //Pour importer les images des sauces
 // Path permet à l'API de savoir ou se trouve les images à récupérer

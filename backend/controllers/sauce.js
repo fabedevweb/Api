@@ -35,6 +35,7 @@ exports.modifySauce = (req, res, next) => {
     .catch((error) =>
       res.status(403).json({ message: "unauthorized request" })
     );
+  console.log(req.body);
 };
 
 exports.deleteSauce = (req, res, next) => {
