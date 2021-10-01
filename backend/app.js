@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 //J'importe mogoose, package qui facilite les interactions avec ma base de données MongoDB grâce à des fonctions extrêmement utiles.
 const mongoose = require("mongoose");
+// Path permet à l'API de savoir ou se trouve les images à récupérer
 const path = require("path");
 const saucesRoutes = require("./routes/sauce");
 //J'importe le router connection utilisateur
@@ -38,7 +39,7 @@ app.use((req, res, next) => {
 });
 //bodyparser pour transformer le corp de la requête provenant du frontend en objet JSON
 app.use(bodyParser.json());
-//Pour importer les images des sauces
+//Importer les images des sauces
 // Path permet à l'API de savoir ou se trouve les images à récupérer
 app.use("/images", express.static(path.join(__dirname, "images")));
 //
