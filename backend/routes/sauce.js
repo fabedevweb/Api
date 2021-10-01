@@ -21,7 +21,7 @@ router.get("/:id", auth, sauceCtrl.getOneSauce);
 //Renvoie un tableau de toutes les sauces de la base de données
 router.get("/", auth, sauceCtrl.getAllSauces);
 
-router.put("/:id", auth, sauceCtrl.modifySauce);
+router.put("/:id", auth, multer, sauceCtrl.modifySauce);
 
 router.delete("/:id", auth, sauceCtrl.deleteSauce);
 
