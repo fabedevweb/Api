@@ -55,11 +55,16 @@ exports.modifySauce = (req, res, next) => {
           ...req.body,
         };
     Sauce.updateOne(
+      //Sélectionner l'objet que je modifie dans la base de donnée
       { _id: req.params.id },
+      //Je donne en deuxième argument la nouvelle version de sauce
+      //Je confirme que l'id doit être le même
       { ...sauceObject, _id: req.params.id }
     )
       .then(() => res.status(200).json({ message: "Objet modifié !" }))
-      .catch((error) => res.status(400).json({ error }));
+      .catch((error) =>
+        res.status(403).json({ error: "403: unauthorized request" })
+      );
   });
 };
 
@@ -74,7 +79,7 @@ exports.deleteSauce = (req, res, next) => {
   Sauce.deleteOne({ _id: req.params.id })
     .then(() => {
       res.status(200).json({
-        message: "Deleted!",
+        message: "Objet supprimé!",
       });
     })
     .catch((error) => {
