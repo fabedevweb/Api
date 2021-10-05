@@ -31,38 +31,46 @@ exports.getAllSauces = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+//Package fs pour supprimer un fichier image en local
 const fs = require("fs");
 
 exports.modifySauce = (req, res, next) => {
-  Sauce.findOne({ _id: req.params.id }) //nous utilisons l'ID que nous recevons comme paramètre pour accéder au Thing correspondant dans la base de données ;
-    .then((sauce) => {
-      const filename = sauce.imageUrl.split("/images/")[1]; //nous utilisons le fait de savoir que notre URL d'image contient un segment /images/ pour séparer le nom de fichier ;
-      const sauceObject = req.file //on regarde si un req.file existe, c-a-d si une image est présente dans la modification
-        ? {
-            ...fs.unlink(`images/${filename}`, () => {
-              //nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier
-            }),
-            //si oui il existe on remplace l'image
-            ...JSON.parse(req.body.sauce),
-            imageUrl: `${req.protocol}://${req.get("host")}/images/${
-              //on utilise multer
-              req.file.filename
-            }`,
-          }
-        : {
-            //si non il n'existe pas, on change juste les textes
-            ...req.body,
-          };
-      Sauce.updateOne(
-        { _id: req.params.id },
-        { ...sauceObject, _id: req.params.id } //nous utilisons l'ID que nous recevons comme paramètre pour accéder au Thing correspondant dans la base de données ;
-      )
-        .then(() => res.status(200).json({ message: "Objet modifié !" }))
-        .catch((error) => res.status(400).json({ error }));
-    });
+  //Je récupère la sauce dans ma base de donnée
+  Sauce.findOne({ _id: req.params.id }).then((sauce) => {
+    //Je récupère le nom du fichier
+    const filename = sauce.imageUrl.split("/images/")[1];
+    //Variable servant à vérifier si un fichier est présent dans la modification avec un ternaire
+    const sauceObject = req.file
+      ? {
+          //Si req.file est TRUE, alors je supprime l'image...
+          ...fs.unlink(`images/${filename}`, () => {}),
+          //...puis je la remplace par la nouvelle
+          ...JSON.parse(req.body.sauce),
+          imageUrl: `${req.protocol}://${req.get("host")}/images/${
+            req.file.filename
+          }`,
+        }
+      : {
+          //Sinon, je ne modifie que le texte
+          ...req.body,
+        };
+    Sauce.updateOne(
+      { _id: req.params.id },
+      { ...sauceObject, _id: req.params.id }
+    )
+      .then(() => res.status(200).json({ message: "Objet modifié !" }))
+      .catch((error) => res.status(400).json({ error }));
+  });
 };
 
 exports.deleteSauce = (req, res, next) => {
+  //Je récupère la sauce dans ma base de donnée
+  Sauce.findOne({ _id: req.params.id }).then((sauce) => {
+    //Je récupère le nom du fichier
+    const filename = sauce.imageUrl.split("/images/")[1];
+    //Je supprime le fichier en local
+    fs.unlinkSync(`images/${filename}`);
+  });
   Sauce.deleteOne({ _id: req.params.id })
     .then(() => {
       res.status(200).json({
