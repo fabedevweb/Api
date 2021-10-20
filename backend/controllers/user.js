@@ -3,7 +3,6 @@
 const bcrypt = require("bcrypt");
 //J'importe mon package token
 const jwt = require("jsonwebtoken");
-const user = require("../models/user");
 //J'ai besoin de mon modèle utilisateur car je vais enregistrer et lire des utilisateurs ou users dans les deux middleware
 const User = require("../models/user");
 
@@ -15,12 +14,10 @@ exports.signup = (req, res, next) => {
         email: req.body.email,
         password: hash,
       });
-      user
-        .save()
-        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-        .catch((error) => res.status(400).json({ error }));
+      user.save(function(err) {
+        console.log(err);
+      });
     })
-
     .catch((error) => res.status(500).json({ error }));
 };
 exports.login = (req, res, next) => {
