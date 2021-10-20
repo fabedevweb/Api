@@ -7,18 +7,16 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 exports.signup = (req, res, next) => {
-  bcrypt
-    .hash(req.body.password, 10)
-    .then((hash) => {
-      const user = new User({
-        email: req.body.email,
-        password: hash,
-      });
-      user.save(function(err) {
-        console.log(err);
-      });
-    })
-    .catch((error) => res.status(500).json({ error }));
+  bcrypt.hash(req.body.password, 10).then((hash) => {
+    const user = new User({
+      email: req.body.email,
+      password: hash,
+    });
+    user.save(function(err) {
+      console.log(err);
+    });
+  });
+  return res.status(500).json({ error: "L'utilisateur existe déjà" });
 };
 exports.login = (req, res, next) => {
   //Méthode findOne pour trouver un seul utilisateur de la base de donnée
