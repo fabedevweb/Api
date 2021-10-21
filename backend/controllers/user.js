@@ -14,13 +14,30 @@ exports.signup = (req, res, next) => {
         email: req.body.email,
         password: hash,
       });
+      user
+        .save()
+        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+        .catch((error) => res.status(400).json({ error }));
+    })
+    .catch((error) => res.status(500).json({ error }));
+};
+/*
+exports.signup = (req, res, next) => {
+  bcrypt
+    .hash(req.body.password, 10)
+    .then((hash) => {
+      const user = new User({
+        email: req.body.email,
+        password: hash,
+      });
       user.save(function(err) {
         console.log(err);
       });
     })
     .catch((error) => res.status(500).json({ error }));
-  return res.status(401).json({ error: "Email déjà utilisé !" });
+  //return res.status(401).json({ error: "Email déjà utilisé !" });
 };
+*/
 exports.login = (req, res, next) => {
   //Méthode findOne pour trouver un seul utilisateur de la base de donnée
   User.findOne({ email: req.body.email }) //L'addresse mail doit correspondre à celle envoyée dans la requête
